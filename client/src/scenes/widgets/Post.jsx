@@ -2,7 +2,6 @@ import {
   ChatBubbleOutlineOutlined,
   FavoriteBorderOutlined,
   FavoriteOutlined,
-  //ShareOutlined,
 } from "@mui/icons-material";
 import Friend from "../../components/Friend";
 import { useState } from "react";
@@ -21,6 +20,7 @@ function Post({
   comments,
 }) {
   const [isComments, setIsComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
@@ -40,17 +40,64 @@ function Post({
         },
         body: JSON.stringify({ userId }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const updatedPost = await response.json();
+      console.log("UPDATED LIKE: ", updatedPost);
       dispatch(setPost({ post: updatedPost }));
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.error(error);
+      console.error("Error updating like:", error);
     }
   }
 
+  async function patchComment(comment) {
+    if (!comment.trim()) {
+      console.error("Comment cannot be empty");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/posts/${postId}/comment`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ comment: comment.trim() }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
+      }
+
+      const updatedPost = await response.json();
+      dispatch(setPost({ post: updatedPost }));
+      console.log("Updated Post with Comment:", updatedPost);
+      
+      // Clear the comment input after successful submission
+      setCommentText("");
+    } catch (err) {
+      console.error("Error posting comment:", err);
+    }
+  }
+
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+    patchComment(commentText);
+  };
+
   if (loading) {
-    return <p>Loading please wait...</p>
+    return (
+      <div className={`${mode === "light" ? "bg-gray-200" : "bg-gray-800"} p-4 rounded shadow`}>
+        <p className="text-center">Loading...</p>
+      </div>
+    );
   }
 
   return (
@@ -74,7 +121,11 @@ function Post({
 
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <button onClick={patchLike} className="text-red-500 hover:scale-110 transition">
+          <button 
+            onClick={patchLike} 
+            className="text-red-500 hover:scale-110 transition"
+            disabled={loading}
+          >
             {isLiked ? <FavoriteOutlined /> : <FavoriteBorderOutlined />}
           </button>
           <span className={mode === "light" ? "text-gray-700" : "text-gray-300"}>{likeCount}</span>
@@ -85,21 +136,55 @@ function Post({
           >
             <ChatBubbleOutlineOutlined />
           </button>
-          <span className={mode === "light" ? "text-gray-700" : "text-gray-300"}>{comments.length}</span>
+          <span className={mode === "light" ? "text-gray-700" : "text-gray-300"}>
+            {comments?.length || 0}
+          </span>
         </div>
-
-        {/*<button className="text-gray-600 dark:text-gray-300 hover:scale-110 transition">
-          <ShareOutlined />
-        </button>*/}
       </div>
 
       {isComments && (
-        <div className={`mt-4 border-t ${mode === "light" ? "border-gray-300" : "border-gray-600"} pt-2 space-y-2`}>
-          {comments.map((comment, i) => (
-            <p key={`${name}-${i}`} className={`text-sm ${mode === "light" ? "text-gray-600" : "text-gray-400"}`}>
-              {comment}
-            </p>
-          ))}
+        <div className={`mt-4 border-t ${mode === "light" ? "border-gray-300" : "border-gray-600"} pt-4 space-y-3`}>
+          <form onSubmit={handleCommentSubmit} className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Write a comment..."
+              onChange={(e) => setCommentText(e.target.value)}
+              value={commentText}
+              className={`flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+                mode === "light" 
+                  ? "bg-white border-gray-300 text-gray-700" 
+                  : "bg-gray-700 border-gray-600 text-gray-300"
+              }`}
+            />
+            <button
+              type="submit"
+              disabled={!commentText.trim()}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded transition"
+            >
+              Send
+            </button>
+          </form>
+          
+          <div className="space-y-2 max-h-60 overflow-y-auto">
+            {comments && comments.length > 0 ? (
+              comments.map((comment, i) => (
+                <div
+                  key={`${postId}-comment-${i}`}
+                  className={`text-sm p-2 rounded ${
+                    mode === "light" 
+                      ? "bg-gray-100 text-gray-600" 
+                      : "bg-gray-700 text-gray-400"
+                  }`}
+                >
+                  {comment}
+                </div>
+              ))
+            ) : (
+              <p className={`text-sm italic ${mode === "light" ? "text-gray-500" : "text-gray-400"}`}>
+                No comments yet. Be the first to comment!
+              </p>
+            )}
+          </div>
         </div>
       )}
     </div>
