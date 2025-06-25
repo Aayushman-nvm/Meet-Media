@@ -14,7 +14,7 @@ import userRoutes from "./routes/usersRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 
 import { register } from "./controllers/auth.js";
-import { createPost } from "./controllers/posts.js";
+//import { createPost } from "./controllers/posts.js";
 
 import { verifyToken } from "./middleware/authMiddleware.js";
 
@@ -52,7 +52,7 @@ const upload = multer({ storage });
 /*Routes with file uploads */
 
 app.post("/auth/register", upload.single("picture"), register);
-app.post("/posts", upload.single("picture"), verifyToken, createPost);
+//app.post("/posts", upload.single("picture"), verifyToken, createPost);
 
 /*Routes */
 
@@ -71,5 +71,5 @@ mongoose
     });
   })
   .catch((error) => {
-    console.log(error);
+    console.log(`MongoDB connection error: ${error}`);
   });
