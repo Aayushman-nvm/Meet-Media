@@ -38,9 +38,9 @@ function FriendList({ userId }) {
     <div className={`${mode === "light" ? "bg-gray-200" : "bg-gray-800"} p-4 rounded shadow space-y-4`}>
       <h3 className={`font-bold text-lg ${mode === "light" ? "text-gray-700" : "text-gray-300"}`}>Friends</h3>
       <div className="space-y-2">
-        {friends.map((friend) => (
+        {friends.map((friend,i) => (
           <Friend
-            key={friend._id}
+            key={i}
             friendId={friend._id}
             name={`${friend.firstName} ${friend.lastName}`}
             subtitle={friend.occupation}
