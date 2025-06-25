@@ -33,15 +33,10 @@ export const authSlice = createSlice({
       state.posts = action.payload.posts;
     },
     setPost: (state, action) => {
-      /*const incomingPosts = action.payload.posts;
-      const updatedPosts = state.posts.map((post) => {
-        const matchedPost = incomingPosts.find(
-          (newPost) => newPost._id === post._id
-        );
-        return matchedPost ? matchedPost : post;
-      });
-      state.posts = updatedPosts;*/
-      state.posts = action.payload.posts;
+      const updatedPost = action.payload.post;
+      state.posts = state.posts.map((post) =>
+        post._id === updatedPost._id ? updatedPost : post
+      );
     },
   },
 });
