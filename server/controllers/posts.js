@@ -8,6 +8,9 @@ export const createPost = async (req, res) => {
     const { userId, description, picturePath } = req.body;
 
     const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const newPost = new Post({
       userId,
@@ -59,6 +62,10 @@ export const likePost = async (req, res) => {
     const { userId } = req.body;
 
     const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
     const isLiked = post.likes.get(userId);
 
     if (isLiked) {
@@ -76,5 +83,41 @@ export const likePost = async (req, res) => {
     res.status(200).json(updatedPost);
   } catch (error) {
     res.status(404).json({ message: error.message });
+  }
+};
+
+/*Update the post comments and send them */
+
+export const commentPost = async (req, res) => {
+  console.log("COMMENT POST SERVER REACHED");
+  try {
+    const { id } = req.params;
+    const { comment } = req.body;
+    
+    console.log("Post ID:", id);
+    console.log("Comment:", comment);
+
+    // Validate comment input
+    if (!comment || typeof comment !== 'string' || comment.trim().length === 0) {
+      return res.status(400).json({ message: "Comment cannot be empty" });
+    }
+
+    // Check if post exists
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      { $push: { comments: comment.trim() } },
+      { new: true }
+    );
+
+    console.log("Updated post with comment:", updatedPost);
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    console.error("COMMENT ERROR:", error);
+    res.status(400).json({ message: error.message });
   }
 };
