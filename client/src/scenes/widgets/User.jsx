@@ -6,6 +6,8 @@ import {
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { FaSquareXTwitter } from "react-icons/fa6";
+import { FaLinkedin } from "react-icons/fa6";
 
 function User({ userId, picturePath }) {
   const [user, setUser] = useState(null);
@@ -69,8 +71,8 @@ function User({ userId, picturePath }) {
       </div>
 
       <div className="flex space-x-4">
-        <a href="#" className="text-blue-600 hover:underline">Twitter</a>
-        <a href="#" className="text-blue-600 hover:underline">LinkedIn</a>
+        <a href="#" className="text-blue-600 hover:underline"><FaSquareXTwitter size={24}/></a>
+        <a href="#" className="text-blue-600 hover:underline"><FaLinkedin size={24}/></a>
       </div>
     </div>
   );
