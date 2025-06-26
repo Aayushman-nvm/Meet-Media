@@ -52,11 +52,11 @@ export const addRemoveFriend = async (req, res) => {
       user.friends = user.friends.filter((id) => 
         id !== friendId
       );
-      console.log("USER FRIENDS IN CONTROLLER: ",user.friends);
+
       friend.friends = friend.friends.filter((f_id) => 
         f_id !== id
       );
-      console.log("FRIENDS FRIENDS IN CONTROLLER: ",friend.friends);
+
     } else {
       user.friends.push(friendId);
       friend.friends.push(id);

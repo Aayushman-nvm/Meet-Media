@@ -46,7 +46,6 @@ function Post({
       }
 
       const updatedPost = await response.json();
-      console.log("UPDATED LIKE: ", updatedPost);
       dispatch(setPost({ post: updatedPost }));
       setLoading(false);
     } catch (error) {
@@ -78,9 +77,6 @@ function Post({
 
       const updatedPost = await response.json();
       dispatch(setPost({ post: updatedPost }));
-      console.log("Updated Post with Comment:", updatedPost);
-      
-      // Clear the comment input after successful submission
       setCommentText("");
     } catch (err) {
       console.error("Error posting comment:", err);

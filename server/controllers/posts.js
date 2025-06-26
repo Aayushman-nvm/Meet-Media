@@ -89,13 +89,9 @@ export const likePost = async (req, res) => {
 /*Update the post comments and send them */
 
 export const commentPost = async (req, res) => {
-  console.log("COMMENT POST SERVER REACHED");
   try {
     const { id } = req.params;
     const { comment } = req.body;
-    
-    console.log("Post ID:", id);
-    console.log("Comment:", comment);
 
     // Validate comment input
     if (!comment || typeof comment !== 'string' || comment.trim().length === 0) {
@@ -114,7 +110,6 @@ export const commentPost = async (req, res) => {
       { new: true }
     );
 
-    console.log("Updated post with comment:", updatedPost);
     res.status(200).json(updatedPost);
   } catch (error) {
     console.error("COMMENT ERROR:", error);

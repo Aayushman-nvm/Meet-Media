@@ -11,7 +11,6 @@ function AllPosts({ userId, isProfile }) {
 
   async function getPosts() {
     try {
-      console.log("GETTING POSTS FOR FEED");
       setLoading(true);
       const response = await fetch("http://localhost:5000/posts", {
         method: "GET",
@@ -33,7 +32,6 @@ function AllPosts({ userId, isProfile }) {
 
   async function getUserPosts() {
     try {
-      console.log("GETTING USER POSTS");
       setLoading(true);
       const response = await fetch(`http://localhost:5000/posts/${userId}/posts`, {
         method: "GET",
@@ -45,7 +43,6 @@ function AllPosts({ userId, isProfile }) {
       }
       
       const data = await response.json();
-      console.log("USER POST DATA: ", data);
       dispatch(setPosts({ posts: data }));
       setLoading(false);
     } catch (error) {
